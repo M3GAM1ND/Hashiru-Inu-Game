@@ -4,8 +4,8 @@
     box-sizing: border-box;
 }
 
-#canvas1 , #canvas2{
-    border: 2px solid black;
+canvas{
+    border: 4px solid black;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -13,8 +13,15 @@
     max-width: 100%;
     max-height: 100%;
 }
+/* #canvas1{
+    background: white;
+} */
+#canvas3{
+    height: 100%;
+    width: 100%;
+}
 
- img , video {
+ img {
     display: none;
 }
 body{

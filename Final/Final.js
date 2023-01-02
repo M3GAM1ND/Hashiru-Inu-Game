@@ -3,7 +3,11 @@ import {InputHandler} from "./input.js";
 import {Background} from "./Background.js";
 import {FlyingEnemy, ClimbingEnemy, GroundEnemy, EnemyHorde} from "./Enemy.js";
 import {Utility} from "./utility.js";
+const strange = document.getElementById("stranger");
+const bgm = document.getElementById("bgm");
+
 window.addEventListener("load", function(){
+    let lastTime = 0; 
     const canvas = document.getElementById("canvas1");
     const ctx = canvas.getContext("2d");
     canvas.width = 1000;
@@ -12,13 +16,73 @@ window.addEventListener("load", function(){
     const ctx2 = canvas2.getContext("2d");
     canvas2.width = 1000;
     canvas2.height = 500;
-    // let i=1;
-    ctx.drawImage(black,1,1);
-    ctx.drawImage(title,-75,-60);
-    ctx.drawImage(enter,-50,125);
-    ctx.drawImage(m3,0,0);
+    const canvas3 = document.getElementById("canvas3");
+    const ctx3 = canvas3.getContext("2d");
+    canvas3.width = 1000;
+    canvas3.height = 500;
+    window.addEventListener("keydown", e =>{
+        if(e.key == "m")
+        strange.play();
+    })
+    class Ghost{
+        constructor(){
+   this.x =Math.random()*970;
+   this.y =Math.random()*465;
+   this.frameX =0;
+   this.fps = 20;
+   this.frameInterval = 1000/this.fps;
+   this.frameTimer = 0;
+   this.speedx = Math.random()*2-1;
+   this.speedy = Math.random()*2-1;
+}
+    update(deltaTime){
+       this.x -= this.speedx;
+       this.y -= this.speedy ;
+       if(this.x<0 || this.x>970) this.speedx = -this.speedx;
+       if(this.y<0 || this.y>465) this.speedy = -this.speedy;
+        if(this.frameTimer > this.frameInterval){
+            this.frameTimer = 0;
+            if (this.frameX < 5) this.frameX++;
+            else this.frameX=0;
+        } else {
+            this.frameTimer += deltaTime;
+        }
+    }
+    draw(context){
+        context.drawImage(ghost,this.frameX*60,0,60,70,this.x,this.y,30,35)
+    }}
+    // ctx.drawImage(black,0,-1);
+    // ctx.drawImage(title,-75,-60);
+    // ctx.drawImage(enter,-50,125);
+    // ctx.drawImage(m3,0,0);
+    let start=[];
+    for(let i=0; i<50 ; i++){
+        start.push(new Ghost());
+    }
+    function animate(timeStamp){
+        let deltaTime = timeStamp - lastTime;
+        lastTime = timeStamp;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx3.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(black,0,0);
+        start.forEach(start => {
+            start.update(deltaTime);
+        });
+        start.forEach(start => {
+            start.draw(ctx);
+        });
+        ctx.drawImage(title,-75,-60);
+        ctx.drawImage(enter,-50,125);
+        ctx.drawImage(m3,500,250,500,250);
+        requestAnimationFrame(animate);
+        start.forEach(start => {
+            start.draw(ctx3);
+        });
+    }
+    animate(0);
     window.addEventListener("keypress" , e =>{
         if(e.key == "Enter"){
+            strange.pause();
     class Game {
         constructor(width, height){
         this.width = width;
@@ -53,6 +117,7 @@ window.addEventListener("load", function(){
         this.alpha=1;
         }
         update(deltaTime){
+            // console.log(deltaTime);
             this.time += deltaTime; //m3
             if (this.lives == -1) this.gameOver=true;//m3
             this.background.update();
@@ -103,8 +168,11 @@ window.addEventListener("load", function(){
             this.enemies=this.enemies.filter(enemy => !enemy.markedForDeletion);
             this.particles=this.particles.filter(particle => !particle.markedForDeletion);
             this.collisions=this.collisions.filter(collision => !collision.markedForDeletion);
-            if(this.gameOver)
+            if(this.gameOver){
             this.alpha -= 0.003;
+            if(this.alpha <= 0)
+            this.alpha=0;
+            }
         }
         draw(context,context2){
             this.background.draw(context);
@@ -146,8 +214,9 @@ window.addEventListener("load", function(){
         }
     }
     const game = new Game(canvas.width,canvas.height);
+    const audio = document.getElementById("background");
+    const audio2 = document.getElementById("background2");
     let lastTime = 0; 
-    const audio = document.getElementById("game_audio");
     function animate(timeStamp){
         let deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
@@ -155,10 +224,12 @@ window.addEventListener("load", function(){
         ctx2.clearRect(0,0,canvas.width,canvas.height);
         game.update(deltaTime);
         game.draw(ctx, ctx2); 
-        if(!game.gameOver)
+        // if(!game.gameOver)
         audio.play();
+        bgm.play();
+        bgm.volume = game.alpha;
         // else
-        //  audio.pause();
+        // audio.volume=game.alpha;
         requestAnimationFrame(animate);
     }
     animate(0);

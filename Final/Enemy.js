@@ -26,7 +26,7 @@ class Enemy{
 }
 
 export class FlyingEnemy extends Enemy{
-    constructor(game){
+    constructor(game,enemy){
         super();
         this.game = game;
         this.width =this.drawWidth= 60;
@@ -75,7 +75,7 @@ export class EnemyHorde extends Enemy{
         this.y = Math.random()*(this.game.height-this.drawHeight);
         this.image = enemy_spinner;
         if(!this.game.gameOver)
-        this.speedX=-4;
+        this.speedX=-3;
         else
         this.speedX= -2;
         this.speedY= Math.random()*10 - 5;

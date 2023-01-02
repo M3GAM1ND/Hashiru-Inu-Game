@@ -1,3 +1,4 @@
+
 export class Collision{
     constructor(game, x,y){
         this.game=game;

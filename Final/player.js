@@ -1,6 +1,10 @@
 import { Sitting,Running,Jumping,Falling,Rolling,Diving,Hit,Dead } from "./playerState.js";
 import { Collision } from "./collision.js";
 import { FloatingMsg } from "./utility.js";
+let blood = document.getElementById("blood_splash");
+let hit = document.getElementById("hit");
+blood.volume = "0.1";
+
 export class Player{
     constructor(game){
         this.game = game;
@@ -74,11 +78,12 @@ export class Player{
                 enemy.x + enemy.drawWidth > this.x &&
                 enemy.y < this.y + this.height &&
                 enemy.y + enemy.drawHeight > this.y
-            ){  
+            ){ 
                 enemy.markedForDeletion = true;
                 this.game.collisions.push(new Collision(this.game, enemy.x + enemy.drawWidth * 0.5,
                     enemy.y + enemy.drawHeight * 0.5));
                 if(this.currentState === this.states[4] || this.currentState === this.states[5] ){
+                    blood.cloneNode(true).play();
                     this.game.enemiesKilled++;
                     this.game.energy -= 5 ;
                         if(this.game.energy < 0) 
@@ -87,6 +92,7 @@ export class Player{
                 }else{
                     this.setState(6,0);
                     this.game.lives--;
+                    hit.cloneNode(true).play();
                     if(this.game.lives <= 0) this.game.gameOver = true;
                 }
                 
